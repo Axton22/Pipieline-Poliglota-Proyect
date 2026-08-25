@@ -1,0 +1,10 @@
+ID,ESTACION,TEMPERATURA,PRECIPITACION,VIENTO,BATERIA,MOTIVO
+006,COTO,-999,10,15,70,temperatura_invalida
+007,GOLFITO,25,-5,10,60,precipitacion_negativa
+008,CORREDORES,30,20,-3,55,viento_negativo
+009,COTO,28,15,12,-10,bateria_fuera_de_rango
+010,GOLFITO,33,7,20,150,bateria_fuera_de_rango
+011,CORREDORES,,18,11,45,campos_faltantes
+012,COTO,32,9,,80,campos_faltantes
+013,GOLFITO,abc,10,14,50,valor_no_numerico
+014,CORREDORES,29,14,16,xyz,valor_no_numerico

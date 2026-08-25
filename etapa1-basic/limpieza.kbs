@@ -1,0 +1,110 @@
+# Etapa 1: Limpieza y validacion de datos ambientales
+# Paradigma imperativo
+
+archivo_entrada$ = "../datos/entrada.csv"
+archivo_salida$  = "../datos/datos_normalizados.csv"
+archivo_log$     = "../datos/descartados.csv"
+
+open(1, archivo_entrada$)
+open(2, archivo_salida$)
+open(3, archivo_log$)
+
+writeline(2, "ID,ESTACION,TEMPERATURA,PRECIPITACION,VIENTO,BATERIA")
+writeline(3, "ID,ESTACION,TEMPERATURA,PRECIPITACION,VIENTO,BATERIA,MOTIVO")
+
+# saltar la cabecera del archivo de entrada
+encabezado$ = readline(1)
+
+total = 0
+validos = 0
+rechazados = 0
+
+while not eof(1)
+    linea$ = readline(1)
+
+   	while length(linea$) > 0 and (right(linea$, 1) = chr(13) or 			   		right(linea$, 1) = chr(10))
+        linea$ = left(linea$, length(linea$) - 1)
+    endwhile
+	
+    if trim(linea$) <> "" then
+        total = total + 1
+        campos = explode(linea$, ",")
+
+        valido = true
+        motivo$ = ""
+
+        # 1. campos faltantes (columnas de mas o de menos)
+        if campos[?] <> 6 then
+            valido = false
+            motivo$ = "campos_faltantes"
+        endif
+
+        if valido then
+            id$       = trim(campos[0])
+            estacion$ = trim(campos[1])
+            temp$     = trim(campos[2])
+            precip$   = trim(campos[3])
+            viento$   = trim(campos[4])
+            bateria$  = trim(campos[5])
+
+            if id$ = "" or estacion$ = "" or temp$ = "" or precip$ = "" or viento$ = "" or bateria$ = "" then
+                valido = false
+                motivo$ = "campos_faltantes"
+            endif
+        endif
+
+        # 2. campos numericos validos
+        if valido then
+            if not isnumeric(temp$) or not isnumeric(precip$) or not isnumeric(viento$) or not isnumeric(bateria$) then
+                valido = false
+                motivo$ = "valor_no_numerico"
+            endif
+        endif
+
+        # 3. reglas de rango
+        if valido then
+            temp    = float(temp$)
+            precip  = float(precip$)
+            viento  = float(viento$)
+            bateria = float(bateria$)
+
+            if temp < -30 or temp > 60 then
+                valido = false
+                motivo$ = "temperatura_invalida"
+            endif
+
+            if valido and precip < 0 then
+                valido = false
+                motivo$ = "precipitacion_negativa"
+            endif
+
+            if valido and viento < 0 then
+                valido = false
+                motivo$ = "viento_negativo"
+            endif
+
+            if valido and (bateria < 0 or bateria > 100) then
+                valido = false
+                motivo$ = "bateria_fuera_de_rango"
+            endif
+        endif
+
+        # decision final: escribir en salida correspondiente
+        if valido then
+            validos = validos + 1
+            writeline(2, id$ + "," + estacion$ + "," + temp$ + "," + precip$ + "," + viento$ + "," + bateria$)
+        else
+            rechazados = rechazados + 1
+            writeline(3, linea$ + "," + motivo$)
+        endif
+    endif
+endwhile
+
+close(1)
+close(2)
+close(3)
+
+print "Registros leidos: " + total
+print "Validos: " + validos
+print "Rechazados: " + rechazados
+print "Archivo generado: " + archivo_salida$
