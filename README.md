@@ -101,10 +101,82 @@ Paradigma imperativo/procedural evidenciado en: acumuladores de estado
 (`suma_temp`, `temp_max`, etc.) actualizados dentro de un ciclo `do`, y
 control explícito de fin de archivo con `iostat`.
 
-## Pendiente
+## Etapa 3 · Java (`etapa3-java`)
 
-- Etapa 3 (Java): reglas de negocio + POO/polimorfismo sobre `metricas.csv`,
-  genera `alertas.csv` y `secuencia.txt`.
+Lee `metricas.csv` generado por Fortran y evalúa las reglas definidas en `reglas.txt`.
+
+Las reglas siguen la estructura:
+
+```text
+<regla> ::= <identificador> <operador> <numero>
+
+<operador> ::= ">" | "<" | ">=" | "<="
+
+<identificador> ::= "TEMP_ALTA"
+                  | "LLUVIA_INTENSA"
+                  | "VIENTO_FUERTE"
+                  | "BATERIA_BAJA"
+```
+
+Ejemplo de reglas:
+
+```text
+TEMP_ALTA > 35
+LLUVIA_INTENSA > 50
+VIENTO_FUERTE > 40
+BATERIA_BAJA < 20
+```
+
+`ParserReglas.java` valida la sintaxis de cada regla y crea el objeto correspondiente.
+
+La programación orientada a objetos se evidencia mediante la clase abstracta `Regla` y las clases:
+
+* `ReglaTemperatura`
+* `ReglaPrecipitacion`
+* `ReglaViento`
+* `ReglaBateria`
+
+Todas heredan de `Regla` e implementan el método `evaluar()`, permitiendo utilizar polimorfismo durante la evaluación de las métricas.
+
+Las métricas utilizadas son:
+
+| Regla            | Métrica evaluada          | Código |
+| ---------------- | ------------------------- | -----: |
+| `TEMP_ALTA`      | `TEMPERATURA_MAXIMA`      |     10 |
+| `LLUVIA_INTENSA` | `PRECIPITACION_ACUMULADA` |     20 |
+| `VIENTO_FUERTE`  | `VIENTO_MAXIMO`           |     30 |
+| `BATERIA_BAJA`   | `BATERIA_PROMEDIO`        |     40 |
+
+La etapa genera:
+
+* `alertas.csv`: contiene las reglas que se activaron.
+* `secuencias.txt`: contiene los códigos numéricos que serán utilizados por la Etapa 4.
+
+Ejemplo de `alertas.csv`:
+
+```text
+REGLA,METRICA,VALOR,OPERADOR,LIMITE
+TEMP_ALTA,TEMPERATURA_MAXIMA,38.00,>,35.00
+LLUVIA_INTENSA,PRECIPITACION_ACUMULADA,138.00,>,50.00
+VIENTO_FUERTE,VIENTO_MAXIMO,42.00,>,40.00
+```
+
+Ejemplo de `secuencias.txt`:
+
+```text
+10
+20
+30
+```
+
+Para ejecutar únicamente esta etapa desde `etapa3-java`:
+
+```text
+javac --release 8 *.java
+java Main
+```
+
+Si una regla contiene un identificador, operador o valor inválido, la etapa informa el error y finaliza sin continuar.
 
 - Etapa 4 (C): verificación de integridad sobre la salida de Java, genera
   `resultado_final.txt`.
