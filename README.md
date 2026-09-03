@@ -79,3 +79,183 @@ control explícito de fin de archivo con `iostat`.
   `resultado_final.txt`.
 - Se debe integrar las 4 etapas en `run_pipeline.bat` para que se ejecute todo en cascada.
 
+# Etapa 3 · Java
+
+## Motor de reglas
+
+Esta etapa recibe las métricas generadas por Fortran desde:
+
+`../datos/metricas.csv`
+
+y evalúa las reglas definidas en:
+
+`reglas.txt`
+
+El objetivo es identificar condiciones de interés utilizando programación orientada a objetos, herencia, polimorfismo y un parser sencillo para interpretar las reglas.
+
+## Archivos principales
+
+* `Main.java`: coordina la ejecución de la Etapa 3.
+* `ParserReglas.java`: valida e interpreta las reglas.
+* `Regla.java`: clase abstracta base.
+* `ReglaTemperatura.java`: regla para temperatura alta.
+* `ReglaPrecipitacion.java`: regla para lluvia intensa.
+* `ReglaViento.java`: regla para viento fuerte.
+* `ReglaBateria.java`: regla para batería baja.
+* `reglas.txt`: archivo donde se definen las reglas.
+
+## Reglas utilizadas
+
+```text
+TEMP_ALTA > 35
+LLUVIA_INTENSA > 50
+VIENTO_FUERTE > 40
+BATERIA_BAJA < 20
+```
+
+Los operadores permitidos son:
+
+```text
+>
+<
+>=
+<=
+```
+
+## Gramática
+
+```text
+<regla> ::= <identificador> <operador> <numero>
+
+<operador> ::= ">" | "<" | ">=" | "<="
+
+<identificador> ::= "TEMP_ALTA"
+                  | "LLUVIA_INTENSA"
+                  | "VIENTO_FUERTE"
+                  | "BATERIA_BAJA"
+```
+
+El parser valida que cada regla tenga un identificador permitido, un operador válido y un valor numérico.
+
+Por ejemplo:
+
+```text
+TEMP_ALTA > 35
+```
+
+es válida.
+
+Mientras que:
+
+```text
+TEMP_ALTA = 35
+```
+
+es inválida porque el operador `=` no forma parte de la gramática.
+
+## Herencia y polimorfismo
+
+La clase abstracta `Regla` contiene los atributos y comportamientos comunes.
+
+De ella heredan:
+
+```text
+Regla
+├── ReglaTemperatura
+├── ReglaPrecipitacion
+├── ReglaViento
+└── ReglaBateria
+```
+
+Todas implementan el método:
+
+```java
+evaluar(double valor)
+```
+
+Durante la ejecución, `Main` trabaja con objetos de tipo `Regla` y llama a `evaluar()`, permitiendo utilizar polimorfismo.
+
+## Métricas evaluadas
+
+| Regla            | Métrica utilizada         | Código |
+| ---------------- | ------------------------- | -----: |
+| `TEMP_ALTA`      | `TEMPERATURA_MAXIMA`      |     10 |
+| `LLUVIA_INTENSA` | `PRECIPITACION_ACUMULADA` |     20 |
+| `VIENTO_FUERTE`  | `VIENTO_MAXIMO`           |     30 |
+| `BATERIA_BAJA`   | `BATERIA_PROMEDIO`        |     40 |
+
+## Archivos de salida
+
+### `../datos/alertas.csv`
+
+Contiene las reglas que se activaron.
+
+Ejemplo:
+
+```csv
+REGLA,METRICA,VALOR,OPERADOR,LIMITE
+TEMP_ALTA,TEMPERATURA_MAXIMA,38.00,>,35.00
+LLUVIA_INTENSA,PRECIPITACION_ACUMULADA,138.00,>,50.00
+VIENTO_FUERTE,VIENTO_MAXIMO,42.00,>,40.00
+```
+
+### `../datos/secuencias.txt`
+
+Contiene los códigos numéricos que utilizará la siguiente etapa del pipeline.
+
+Ejemplo:
+
+```text
+10
+20
+30
+```
+
+## Ejecución
+
+Desde la carpeta `etapa3-java`:
+
+```bash
+javac --release 8 *.java
+java Main
+```
+
+Resultado esperado con los datos actuales:
+
+```text
+Etapa 3 completada.
+Alertas generadas: 3
+Secuencias generadas: 3
+```
+
+## Validación de errores
+
+Si una regla no cumple con la gramática, la etapa se detiene e informa el error.
+
+Ejemplo:
+
+```text
+TEMP_ALTA = 35
+```
+
+Resultado:
+
+```text
+Error en Etapa 3: Operador invalido en linea 1: TEMP_ALTA = 35
+```
+
+## Integración en el pipeline
+
+```text
+metricas.csv
+     ↓
+   JAVA
+     ↓
+alertas.csv
+secuencias.txt
+     ↓
+Etapa 4
+```
+
+La Etapa 3 utiliza directamente la salida generada por Fortran y produce los archivos que serán utilizados por la etapa siguiente.
+
