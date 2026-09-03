@@ -20,8 +20,17 @@ Pipieline-Poliglota-Proyect/
 │   └── limpieza.kbs
 ├── etapa2-fortran/
 │   └── metricas.f90
-├── etapa3-java/            
-└── etapa4-c/            
+├── etapa3-java/ 
+|   ├── Main.java                 
+|   ├── ParserReglas.java          
+|   ├── Regla.java                 
+|   ├── ReglaTemperatura.java     
+|   ├── ReglaPrecipitacion.java    
+|   ├── ReglaViento.java           
+|   ├── ReglaBateria.java          
+|   └── reglas.txt                        
+└── etapa4-c/  
+    └──verificacion.c          
 ```
 
 ## Cómo correr el pipeline
