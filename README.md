@@ -3,6 +3,27 @@
 El objetivo de este proyecto es construir un único sistema (no programas independientes) donde la salida de cada etapa
 se convierte en la entrada de la siguiente, usando un lenguaje distinto por etapa.
 
+## Estructura del proyecto
+```
+Pipieline-Poliglota-Proyect/
+├── README.md
+├── run_pipeline.bat        # corre todas las etapas en cascada
+├── datos/
+│   ├── entrada.csv              # datos crudos (input inicial)
+│   ├── datos_normalizados.csv   # salida Etapa 1 / entrada Etapa 2
+│   ├── descartados.csv          # registros rechazados en Etapa 1 (auditoría)
+│   ├── metricas.csv             # salida Etapa 2 / entrada Etapa 3
+│   ├── alertas.csv              # salida Etapa 3 
+│   ├── secuencia.txt            # salida Etapa 3 
+│   └── resultado_final.txt      # salida Etapa 4 
+├── etapa1-basic/
+│   └── limpieza.kbs
+├── etapa2-fortran/
+│   └── metricas.f90
+├── etapa3-java/            
+└── etapa4-c/            
+```
+
 ## Cómo correr el pipeline
 
 Requisitos: BASIC-256 y MinGW/gfortran instalados, deben haberlos añadido al path de las variables de entorno
