@@ -105,7 +105,19 @@ control explícito de fin de archivo con `iostat`.
 
 - Etapa 3 (Java): reglas de negocio + POO/polimorfismo sobre `metricas.csv`,
   genera `alertas.csv` y `secuencia.txt`.
+
 - Etapa 4 (C): verificación de integridad sobre la salida de Java, genera
   `resultado_final.txt`.
+Recibe secuencias.txt generado por la Etapa 3 y calcula un checksum de verificación de integridad.
+
+Por cada valor leído, en orden, con posicion empezando en 1:
+
+checksum = checksum + valor
+checksum = checksum XOR posicion
+posicion = posicion + 1
+
+Si secuencias.txt viene vacío (ninguna regla se disparó), el programa lo reporta explícitamente en vez de fallar. El resultado final, junto con la secuencia procesada y el checksum en decimal y hexadecimal, se escribe en resultado_final.txt.
+
+
 - Se debe integrar las 4 etapas en `run_pipeline.bat` para que se ejecute todo en cascada.
 
