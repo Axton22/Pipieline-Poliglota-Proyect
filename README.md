@@ -178,8 +178,9 @@ java Main
 
 Si una regla contiene un identificador, operador o valor inválido, la etapa informa el error y finaliza sin continuar.
 
-- Etapa 4 (C): verificación de integridad sobre la salida de Java, genera
-  `resultado_final.txt`.
+-`Etapa 4 (C): verificación de integridad sobre la salida de Java, genera`
+`resultado_final.txt`.
+
 Recibe secuencias.txt generado por la Etapa 3 y calcula un checksum de verificación de integridad.
 
 Por cada valor leído, en orden, con posicion empezando en 1:
